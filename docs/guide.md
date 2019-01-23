@@ -1,3 +1,6 @@
+---
+sidebar: auto
+---
 ## Quick start
 
 1.install `vue-concise-slider`
@@ -11,9 +14,9 @@
 ```html
 <template>
 <!-- Make a frame wrapped slider -->
- <div style="width:70%;margin:20px auto;height:400px">
+ <div style="width:100%;margin:20px auto;height:400px">
       <!-- Configuring slider components -->
-      <slider ref="slider" :pages="pages" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
+      <slider ref="slider" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
           <slideritem v-for="(item,index) in pages" :key="index" :style="item.style">{{item.html}}</slideritem>
           <!-- Set loading -->
           <div slot="loading">loading...</div>
@@ -29,19 +32,19 @@ export default {
         //Image list
         pages:[
           {
-          html: '<div class="slider1">slider1</div>',
+          html: 'slider1',
           style: {
             'background': '#1bbc9b'
             }
           },
           {
-            html: '<div class="slider2">slider2</div>',
+            html: 'slider2',
             style: {
               'background': '#4bbfc3'
             }
           },
           {
-            html: '<div class="slider3">slider3</div>',
+            html: 'slider3',
             style: {
               'background': '#7baabe'
             }
@@ -124,69 +127,6 @@ export default {
         </div>
       </div>
   </slider>
-```
-## Use slot to render a custom page
-
-1. Import slider and slideritem
-2. Do not pass in the page array, use slideritem instead
-3. Cannot be used in coverflow mode
-
-```html
-  <template>
-  <div>
-    <div style="width:70%;margin:20px auto;height:400px">
-      <slider ref="slider" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
-        <slideritem v-for="(item,index) in someList" :key="index" :style="item.style">{{item.html}}</slideritem>
-      </slider>
-    </div>
-  </div>
-</template>
-<script>
-import { slider, slideritem } from 'vue-concise-slider'
-export default {
-  el: '#sliderbasic',
-  data () {
-    return {
-      someList: [],
-      options: {
-        pagination: true,
-        thresholdDistance: 100, // 滑动距离阈值判定
-        thresholdTime: 300, // 滑动时间阈值判定
-        speed: 300 // 滑动速度
-      }
-    }
-  },
-  mounted () {
-    let that = this
-    setTimeout(function () {
-      that.someList = [
-        {
-          html: 'slide1',
-          style: {
-            'background': '#1bbc9b'
-          }
-        },
-        {
-          html: 'slide2',
-          style: {
-            'background': '#4bbfc3'
-          }
-        },
-        {
-          html: 'slide3',
-          style: {
-            'background': '#7baabe'
-          }
-        }
-      ]
-    }, 2000)
-  },
-  components: {
-    slider,
-    slideritem
-  },
-}
-</script>
 ```
 
 ## Asynchronous loading
@@ -321,12 +261,14 @@ export default {
 ## CoverFlow Effect
 
 1. effect set `coverflow`,and loop set `true`,Openning cycle slip
-2. someList data needs to set at least the width (% or PX)
+2. You must use a template to wrap the slideritem
+3. The total number of pages passed in `pageLength`, and the current serial number `index`
 
 ```html
   <template>
       <div style="width:70%;margin:20px auto;height:400px">
-        <slider ref="slider" :pages="someList" :options="options" >
+        <slider ref="slider" :options="options">
+            <slideritem v-for="(item,index) in someList" :pageLength="someList.length" :index="index" :key="index" :style="item.style">{{item.html}}</slideritem>
         </slider>
       </div>
   </template>
@@ -385,78 +327,6 @@ export default {
   </script>
 ```
 
-## Pages uses dynamic components
-
-1. The incoming dynamic component attribute 'component' in pages
-2. V3.0.0 or later is not supported
-
-```html
-  <template>
-      <div style="width:70%;margin:20px auto;height:400px">
-        <slider ref="slider" :pages="someList" :options="options">
-        </slider>
-      </div>
-  </template>
-  <script>
-  import slider from '../components/slider'
-  export default {
-    el: '#sliderbasic',
-    data () {
-      return {
-      someList: [],
-      options: {
-          currentPage: 1,
-          thresholdDistance: 100,
-          thresholdTime: 300,
-          speed: 300,
-          timingFunction: 'ease',
-          loop: true,
-          autoplay: 0
-        }
-      }
-    },
-    mounted () {
-      let that = this
-      setTimeout(function () {
-        that.someList = [
-        {
-          // If component is true, this HTML item is invalid
-          html: '<div class="slide1">slide1</div>',
-          style: {
-            'background': '#1bbc9b'
-          },
-          component: {
-            props: ['item', 'options', 'pages'],
-            data() {
-              return {
-                //img src
-                img: 'xxxxx.jpg'
-              }
-            },
-            template: `<div><img :src="img" /><p>test</p>...</div>`
-          }
-        },
-        {
-          html: 'slide2',
-          style: {
-            'background': '#4bbfc3'
-          }
-        },
-        {
-          html: 'slide3',
-          style: {
-            'background': '#7baabe'
-          }
-        }
-      ]
-      }, 2000)
-    },
-    components: {
-      slider
-    }
-  }
-  </script>
-```
 ## Use custom paging
 
 1. Pagination is set to true
@@ -520,6 +390,98 @@ export default {
   components: {
     slider,
     slideritem
+  },
+}
+</script>
+```
+
+## Nested slider
+
+1. Effect is set to 'nest'
+2. Slideritem nesting
+
+```html
+  <template>
+  <div>
+    <div style="width:70%;margin:20px auto;height:400px">
+      <slider ref="slider" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
+        <slideritem v-for="(item,index) in someList" :key="index" :style="item.style">{{item.html}}</slideritem>
+        <slideritem>
+          <slider ref="slider" :options="options1">
+            <slideritem v-for="(item,index) in someList1" :key="index" :style="item.style">{{item.html}}</slideritem>
+          </slider>
+        </slideritem>
+        <slideritem v-for="(item,index) in someList" :key="index + 3" :style="item.style">{{item.html}}</slideritem>
+      </slider>
+    </div>
+  </div>
+</template>
+<script>
+import { slider, slideritem } from '../../dist/module.js'
+export default {
+  el: '#slidernest',
+  data () {
+    return {
+      someList: [],
+      someList1: [],
+      options: {
+        // direction: 'vertical',
+        effect: 'nest',
+        pagination: true,
+        // nested: false, // 嵌套
+        thresholdDistance: 100, // 滑动距离阈值判定
+        thresholdTime: 300, // 滑动时间阈值判定
+        grabCursor: true, // 抓标样式
+        speed: 300, // 滑动速度
+        // timingFunction: 'ease', // 滑动方式
+        loop: true // 无限循环
+        // autoplay: 0 // 自动播放:时间[ms]
+      },
+      options1: {
+        direction: 'vertical',
+        pagination: true,
+        thresholdDistance: 100, // 滑动距离阈值判定
+        thresholdTime: 300, // 滑动时间阈值判定
+        grabCursor: true, // 抓标样式
+        speed: 300, // 滑动速度
+        // timingFunction: 'ease', // 滑动方式
+        loop: true // 无限循环
+        // autoplay: 0 // 自动播放:时间[ms]
+      }
+    }
+  },
+  mounted () {
+    let that = this
+    setTimeout(function () {
+      that.someList = [
+        {
+          html: 'slide1',
+          style: {
+            'background': '#1bbc9b'
+          }
+        }
+      ]
+      that.someList1 = [
+        {
+          html: 'slide1-1',
+          style: {
+            'background': '#1bbc9b'
+          }
+        },
+        {
+          html: 'slide2-2',
+          style: {
+            'background': '#4bbfc3'
+          }
+        },
+        {
+          html: 'slide3-3',
+          style: {
+            'background': '#7baabe'
+          }
+        }
+      ]
+    }, 2000)
   },
 }
 </script>

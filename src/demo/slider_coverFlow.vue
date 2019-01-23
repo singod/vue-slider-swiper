@@ -18,7 +18,8 @@
 <template>
   <div>
     <div style="width:70%;margin:20px auto;height:400px">
-      <slider ref="slider" :pages="someList" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
+      <slider ref="slider" :options="options" @slide='slide' @tap='onTap' @init='onInit'>
+        <slideritem v-for="(item,index) in someList" :pageLength="someList.length" :index="index" :key="index" :style="item.style">{{item.html}}</slideritem>
         <div slot="loading">
           <div class="loadingDot">
             <i></i>
@@ -42,7 +43,8 @@
   </div>
 </template>
 <script>
-import slider from '../components/slider'
+import slider from '../components/sliderCoverFlow'
+import slideritem from '../components/slider_item'
 export default {
   el: '#slidercoverFlow',
   data () {
@@ -51,10 +53,9 @@ export default {
       options: {
         effect: 'coverflow',
         currentPage: 1,
-        tracking: false,
         thresholdDistance: 100, // 滑动距离阈值判定
         thresholdTime: 300, // 滑动时间阈值判定
-        deviation: 200, // 偏移值
+        deviation: 300, // 偏移值
         widthScalingRatio: 0.8, // 宽度缩放比例
         heightScalingRatio: 0.8, // 高度缩放比例
         loopedSlides: 2, // 多级滚动时，需要添加前后遍历数
@@ -65,7 +66,8 @@ export default {
     }
   },
   components: {
-    slider
+    slider,
+    slideritem
   },
   mounted () {
     let that = this
